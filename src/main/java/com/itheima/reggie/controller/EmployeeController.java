@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 
 /**
  * @author cxw
@@ -62,5 +63,23 @@ public class EmployeeController {
     public R<String> logout(HttpServletRequest request){
         request.getSession().removeAttribute("employee");
         return R.success("退出成功");
+    }
+
+    @PostMapping
+    public R<Employee> add(@RequestBody Employee employee,HttpServletRequest request){
+        log.info("新增员工信息:{}",employee.toString());
+
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        Long empID = (Long) request.getSession().getAttribute("employee");
+
+        employee.setCreateUser(empID);
+        employee.setUpdateUser(empID);
+
+        employeeService.save(employee);
+        return R.success(employee);
     }
 }
