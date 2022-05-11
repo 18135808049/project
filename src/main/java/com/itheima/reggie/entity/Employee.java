@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @date 2022/5/11 10:15
  */
 @Data
-public class employee {
+public class Employee {
     private Long id;
     private String name;
     private String password;
