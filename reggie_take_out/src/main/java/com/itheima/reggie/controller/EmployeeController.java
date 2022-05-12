@@ -12,7 +12,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
 /**
@@ -53,20 +52,20 @@ public class EmployeeController {
             return R.error("员工信息已被禁用");
         }
 
-        request.getSession().setAttribute("employee",emp.getId());
+        request.getSession().setAttribute("employee", emp.getId());
 
         return R.success(emp);
     }
 
     @PostMapping("/logout")
-    public R<String> logout(HttpServletRequest request){
+    public R<String> logout(HttpServletRequest request) {
         request.getSession().removeAttribute("employee");
         return R.success("退出成功");
     }
 
     @PostMapping
-    public R<Employee> add(@RequestBody Employee employee,HttpServletRequest request){
-        log.info("新增员工信息:{}",employee.toString());
+    public R<Employee> add(@RequestBody Employee employee, HttpServletRequest request) {
+        log.info("新增员工信息:{}", employee.toString());
 
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
@@ -83,14 +82,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/page")
-    public R<Page> page(int page, int pageSize, String name){
-        Page page1 = new Page(page,pageSize);
+    public R<Page> page(int page, int pageSize, String name) {
+        Page page1 = new Page(page, pageSize);
 
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
-        lqw.like(StringUtils.isNotEmpty(name),Employee::getName,name)
-        .orderByDesc(Employee::getUpdateTime);
+        lqw.like(StringUtils.isNotEmpty(name), Employee::getName, name)
+                .orderByDesc(Employee::getUpdateTime);
 
-        employeeService.page(page1,lqw);
+        employeeService.page(page1, lqw);
         return R.success(page1);
     }
 }
