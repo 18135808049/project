@@ -1,14 +1,13 @@
 package com.itheima.reggie.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.entity.Category;
 import com.itheima.reggie.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author cxw
@@ -27,5 +26,14 @@ public class CategoryController {
         log.info(category.toString());
         categoryService.save(category);
         return R.success("新增分类成功");
+    }
+
+    @GetMapping("/page")
+    public R<Page> page(int page,int pageSize){
+        Page page1 = new Page(page,pageSize);
+        LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByAsc(Category::getSort);
+        categoryService.page(page1,lqw);
+        return R.success(page1);
     }
 }
