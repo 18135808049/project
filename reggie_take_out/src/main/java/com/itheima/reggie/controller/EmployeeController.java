@@ -12,7 +12,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 /**
  * @author cxw
@@ -64,10 +63,10 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public R<Employee> add(@RequestBody Employee employee, HttpServletRequest request) {
+    public R<String> add(@RequestBody Employee employee, HttpServletRequest request) {
         log.info("新增员工信息:{}", employee.toString());
 
-        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        /*employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
         employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
@@ -75,10 +74,10 @@ public class EmployeeController {
         Long empID = (Long) request.getSession().getAttribute("employee");
 
         employee.setCreateUser(empID);
-        employee.setUpdateUser(empID);
+        employee.setUpdateUser(empID);*/
 
         employeeService.save(employee);
-        return R.success(employee);
+        return R.success("新增员工成功");
     }
 
     @GetMapping("/page")
@@ -96,9 +95,9 @@ public class EmployeeController {
     @PutMapping
     public R<String> update(HttpServletRequest request, @RequestBody Employee employee) {
         log.info(employee.toString());
-        Long empID = (Long) request.getSession().getAttribute("employee");
+        /*Long empID = (Long) request.getSession().getAttribute("employee");
         employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(empID);
+        employee.setUpdateUser(empID);*/
         employeeService.updateById(employee);
         return R.success("修改成功");
     }

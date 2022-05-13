@@ -49,6 +49,7 @@ public class LoginCheckFilter implements Filter {
         if(request.getSession().getAttribute("employee")!=null){
             log.info("用户已登录,用户id为{}",request.getSession().getAttribute("employee"));
             filterChain.doFilter(request,response);
+            return;
         }
 
         log.info("用户未登录");
