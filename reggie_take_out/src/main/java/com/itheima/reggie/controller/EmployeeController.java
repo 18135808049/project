@@ -66,9 +66,9 @@ public class EmployeeController {
     public R<String> add(@RequestBody Employee employee, HttpServletRequest request) {
         log.info("新增员工信息:{}", employee.toString());
 
-        /*employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
-        employee.setCreateTime(LocalDateTime.now());
+        /*employee.setCreateTime(LocalDateTime.now());
         employee.setUpdateTime(LocalDateTime.now());
 
         Long empID = (Long) request.getSession().getAttribute("employee");
