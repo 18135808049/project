@@ -40,7 +40,7 @@ public class DishController {
 
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name){
-        Page<Dish> pageInfo = new Page<>();
+        Page<Dish> pageInfo = new Page<>(page,pageSize);
         Page<DishDto> dishDtoPage = new Page<>();
 
         LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
@@ -74,5 +74,19 @@ public class DishController {
     public R<String> update(@RequestBody DishDto dishDto){
         dishService.updateWithFlavor(dishDto);
         return R.success("修改菜品成功");
+    }
+
+    @PostMapping("/status/{status}")
+    public R<String> update(@PathVariable String status,Long[] ids){
+        dishService.update(ids);
+        return R.success("修改成功");
+    }
+
+    @DeleteMapping
+    public R<String> delete(Long[] ids){
+        for (Long id : ids) {
+            dishService.removeById(id);
+        }
+        return R.success("删除成功");
     }
 }

@@ -31,7 +31,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
         Long dishId = dishDto.getId();
         List<DishFlavor> flavors = dishDto.getFlavors();
-        flavors = flavors.stream().map(item->{
+        flavors = flavors.stream().map(item -> {
             item.setDishId(dishId);
             return item;
         }).collect(Collectors.toList());
@@ -44,10 +44,10 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         Dish dish = this.getById(id);
 
         DishDto dishDto = new DishDto();
-        BeanUtils.copyProperties(dish,dishDto);
+        BeanUtils.copyProperties(dish, dishDto);
 
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(DishFlavor::getDishId,dish.getId());
+        lqw.eq(DishFlavor::getDishId, dish.getId());
         List<DishFlavor> flavors = dishFlavorService.list(lqw);
         dishDto.setFlavors(flavors);
         return dishDto;
@@ -59,14 +59,23 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         this.updateById(dishDto);
 
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(DishFlavor::getDishId,dishDto.getId());
+        lqw.eq(DishFlavor::getDishId, dishDto.getId());
         dishFlavorService.remove(lqw);
 
         List<DishFlavor> flavors = dishDto.getFlavors();
-        flavors = flavors.stream().map(item->{
+        flavors = flavors.stream().map(item -> {
             item.setDishId(dishDto.getId());
             return item;
         }).collect(Collectors.toList());
         dishFlavorService.saveBatch(flavors);
+    }
+
+    @Override
+    public void update(Long[] ids) {
+        for (Long id : ids) {
+            Dish dish = getById(id);
+            dish.setStatus(dish.getStatus() == 1 ? 0 : 1);
+            updateById(dish);
+        }
     }
 }
