@@ -24,12 +24,13 @@ import java.util.stream.Collectors;
 public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> implements SetmealService {
     @Autowired
     private SetmealDishService setmealDishService;
+
     @Override
     public void saveWithDish(SetmealDto setmealDto) {
         this.save(setmealDto);
 
         List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
-        setmealDishes.stream().map(item->{
+        setmealDishes.stream().map(item -> {
             item.setSetmealId(setmealDto.getId());
             return item;
         }).collect(Collectors.toList());
@@ -40,14 +41,14 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     @Override
     public void removeWithDish(List<Long> ids) {
         LambdaQueryWrapper<Setmeal> lqw = new LambdaQueryWrapper<>();
-        lqw.in(Setmeal::getId,ids).eq(Setmeal::getStatus,1);
+        lqw.in(Setmeal::getId, ids).eq(Setmeal::getStatus, 1);
         int count = count(lqw);
-        if(count>0){
+        if (count > 0) {
             throw new CustomException("套餐售卖中，不能删除");
         }
         this.removeByIds(ids);
         LambdaQueryWrapper<SetmealDish> lqw1 = new LambdaQueryWrapper<>();
-        lqw1.eq(SetmealDish::getSetmealId,ids);
+        lqw1.eq(SetmealDish::getSetmealId, ids);
         setmealDishService.remove(lqw1);
     }
 
@@ -55,10 +56,10 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public SetmealDto getByIdWithDish(Long id) {
         SetmealDto setmealDto = new SetmealDto();
         Setmeal setmeal = getById(id);
-        BeanUtils.copyProperties(setmeal,setmealDto);
+        BeanUtils.copyProperties(setmeal, setmealDto);
 
         LambdaQueryWrapper<SetmealDish> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(SetmealDish::getSetmealId,id);
+        lqw.eq(SetmealDish::getSetmealId, id);
         List<SetmealDish> setmealDishes = setmealDishService.list(lqw);
         setmealDto.setSetmealDishes(setmealDishes);
         return setmealDto;
@@ -69,14 +70,23 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         this.updateById(setmealDto);
 
         LambdaQueryWrapper<SetmealDish> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(SetmealDish::getSetmealId,setmealDto.getId());
+        lqw.eq(SetmealDish::getSetmealId, setmealDto.getId());
         setmealDishService.remove(lqw);
 
         List<SetmealDish> setmealDishes = setmealDto.getSetmealDishes();
-        setmealDishes = setmealDishes.stream().map(item->{
+        setmealDishes = setmealDishes.stream().map(item -> {
             item.setSetmealId(setmealDto.getId());
             return item;
         }).collect(Collectors.toList());
         setmealDishService.saveBatch(setmealDishes);
+    }
+
+    @Override
+    public void update(Long[] ids) {
+        for (Long id : ids) {
+            Setmeal setmeal = getById(id);
+            setmeal.setStatus(setmeal.getStatus() == 1 ? 0 : 1);
+            updateById(setmeal);
+        }
     }
 }

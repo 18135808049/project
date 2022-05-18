@@ -91,4 +91,10 @@ public class SetmealController {
         return R.success("修改成功");
     }
 
+    @PostMapping("/status/{status}")
+    public R<String> update(@PathVariable String status,Long[] ids){
+        setmealService.update(ids);
+        return R.success("修改成功");
+    }
+
 }
