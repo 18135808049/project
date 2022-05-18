@@ -6,6 +6,7 @@ import com.itheima.reggie.common.R;
 import com.itheima.reggie.dto.DishDto;
 import com.itheima.reggie.entity.Category;
 import com.itheima.reggie.entity.Dish;
+import com.itheima.reggie.entity.DishFlavor;
 import com.itheima.reggie.service.CategoryService;
 import com.itheima.reggie.service.DishFlavorService;
 import com.itheima.reggie.service.DishService;
@@ -85,8 +86,22 @@ public class DishController {
     @DeleteMapping
     public R<String> delete(Long[] ids){
         for (Long id : ids) {
+            LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(DishFlavor::getDishId,id);
+            dishFlavorService.remove(lqw);
             dishService.removeById(id);
         }
         return R.success("删除成功");
+    }
+
+    @GetMapping("/list")
+    public R<List<Dish>> list(Dish dish){
+        LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId())
+                .eq(Dish::getStatus,1)
+                .orderByAsc(Dish::getSort)
+                .orderByDesc(Dish::getUpdateTime);
+        List<Dish> list = dishService.list(lqw);
+        return R.success(list);
     }
 }

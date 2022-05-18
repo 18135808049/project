@@ -37,7 +37,10 @@ public class LoginCheckFilter implements Filter {
                 "/employee/logout",
                 "/backend/**",
                 "/front/**",
-                "/common/**"
+                "/common/**",
+                "/user/sendMsg",
+                "/user/login",
+                "/favicon.ico"
         };
 
         boolean check = check(urls, requestURI);
