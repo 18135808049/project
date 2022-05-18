@@ -79,7 +79,7 @@ public class DishController {
 
     @PostMapping("/status/{status}")
     public R<String> update(@PathVariable String status,Long[] ids){
-        dishService.update(ids);
+        dishService.update(status,ids);
         return R.success("修改成功");
     }
 

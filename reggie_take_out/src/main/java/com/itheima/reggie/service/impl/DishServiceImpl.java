@@ -1,6 +1,7 @@
 package com.itheima.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.reggie.dto.DishDto;
 import com.itheima.reggie.entity.Dish;
@@ -71,11 +72,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     @Override
-    public void update(Long[] ids) {
-        for (Long id : ids) {
+    public void update(String status, Long[] ids) {
+        LambdaUpdateWrapper<Dish> luw = new LambdaUpdateWrapper<>();
+        luw.in(Dish::getId,ids)
+                .set(Dish::getStatus,status);
+        update(luw);
+        /*for (Long id : ids) {
             Dish dish = getById(id);
             dish.setStatus(dish.getStatus() == 1 ? 0 : 1);
             updateById(dish);
-        }
+        }*/
     }
 }

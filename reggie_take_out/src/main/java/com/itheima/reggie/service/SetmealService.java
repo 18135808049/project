@@ -19,5 +19,5 @@ public interface SetmealService extends IService<Setmeal> {
 
     void updateWithDish(SetmealDto setmealDto);
 
-    void update(Long[] ids);
+    void update(Integer status, Long[] ids);
 }

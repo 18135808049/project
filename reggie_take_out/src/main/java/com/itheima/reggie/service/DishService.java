@@ -15,5 +15,5 @@ public interface DishService extends IService<Dish> {
 
     void updateWithFlavor(DishDto dishDto);
 
-    void update(Long[] ids);
+    void update(String status, Long[] ids);
 }

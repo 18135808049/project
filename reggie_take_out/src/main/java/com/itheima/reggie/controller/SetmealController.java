@@ -92,8 +92,8 @@ public class SetmealController {
     }
 
     @PostMapping("/status/{status}")
-    public R<String> update(@PathVariable String status,Long[] ids){
-        setmealService.update(ids);
+    public R<String> update(@PathVariable Integer status,Long[] ids){
+        setmealService.update(status,ids);
         return R.success("修改成功");
     }
 

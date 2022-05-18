@@ -1,6 +1,7 @@
 package com.itheima.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.reggie.common.CustomException;
 import com.itheima.reggie.dto.SetmealDto;
@@ -82,11 +83,15 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     }
 
     @Override
-    public void update(Long[] ids) {
-        for (Long id : ids) {
+    public void update(Integer status, Long[] ids) {
+        LambdaUpdateWrapper<Setmeal> luw = new LambdaUpdateWrapper<>();
+        luw.in(Setmeal::getId, ids)
+                .set(Setmeal::getStatus, status);
+        update(luw);
+        /*for (Long id : ids) {
             Setmeal setmeal = getById(id);
             setmeal.setStatus(setmeal.getStatus() == 1 ? 0 : 1);
             updateById(setmeal);
-        }
+        }*/
     }
 }
