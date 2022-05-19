@@ -44,20 +44,20 @@ public class OrdersController {
     private ShoppingCartController shoppingCartController;
 
     @PostMapping("/submit")
-    public R<String> submit(@RequestBody Orders orders){
+    public R<String> submit(@RequestBody Orders orders) {
         ordersService.submit(orders);
         return R.success("下单成功");
     }
 
     @GetMapping("/page")
-    public R<Page> page(int page, int pageSize, String number, String beginTime,String endTime){
-        Page<Orders> ordersPage = new Page<>(page,pageSize);
+    public R<Page> page(int page, int pageSize, String number, String beginTime, String endTime) {
+        Page<Orders> ordersPage = new Page<>(page, pageSize);
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(number!=null,Orders::getNumber,number)
-                .between(beginTime!=null&&endTime!=null,
+        lqw.eq(number != null, Orders::getNumber, number)
+                .between(beginTime != null && endTime != null,
                         Orders::getOrderTime,
-                        beginTime,endTime);
-        ordersService.page(ordersPage,lqw);
+                        beginTime, endTime);
+        ordersService.page(ordersPage, lqw);
         List<Orders> collect = ordersPage.getRecords().stream().map(item -> {
             Long userId = item.getUserId();
             User user = userService.getById(userId);
@@ -68,8 +68,9 @@ public class OrdersController {
         ordersPage.setRecords(collect);
         return R.success(ordersPage);
     }
+
     @PutMapping
-    public R<Integer> edit(@RequestBody Param param){
+    public R<Integer> edit(@RequestBody Param param) {
 //        System.out.println(param.toString());
         Orders orders = ordersService.getById(param.getId());
         orders.setStatus(param.getStatus());
@@ -78,23 +79,23 @@ public class OrdersController {
     }
 
     @GetMapping("/userPage")
-    public R<Page> page(int page, int pageSize){
+    public R<Page> page(int page, int pageSize) {
         Long currentId = BaseContext.getCurrentId();
 
-        Page<Orders> ordersPage = new Page<>(page,pageSize);
+        Page<Orders> ordersPage = new Page<>(page, pageSize);
         Page<OrderDto> orderDtoPage = new Page<>();
-        LambdaQueryWrapper<Orders> lqw= new LambdaQueryWrapper<>();
-        lqw.eq(Orders::getUserId,currentId);
-        ordersService.page(ordersPage,lqw);
-        BeanUtils.copyProperties(ordersPage,orderDtoPage,"records");
+        LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Orders::getUserId, currentId);
+        ordersService.page(ordersPage, lqw);
+        BeanUtils.copyProperties(ordersPage, orderDtoPage, "records");
 
         List<Orders> records1 = ordersPage.getRecords();
 
-        List<OrderDto> records = records1.stream().map(item->{
+        List<OrderDto> records = records1.stream().map(item -> {
             OrderDto orderDto = new OrderDto();
-            BeanUtils.copyProperties(item,orderDto);
+            BeanUtils.copyProperties(item, orderDto);
             LambdaQueryWrapper<OrderDetail> lqw1 = new LambdaQueryWrapper<>();
-            lqw1.eq(OrderDetail::getOrderId,item.getId());
+            lqw1.eq(OrderDetail::getOrderId, item.getId());
             List<OrderDetail> orderDetails = orderDetailService.list(lqw1);
             orderDto.setOrderDetails(orderDetails);
             return orderDto;
@@ -105,7 +106,7 @@ public class OrdersController {
     }
 
     @PostMapping("/again")
-    public R<String> again(@RequestBody Map<String,Object> map){
+    public R<String> again(@RequestBody Map<String, Object> map) {
         String idObject = (String) map.get("id");
         Long id = Long.parseLong(idObject);
 
@@ -114,29 +115,37 @@ public class OrdersController {
         Long userId = orders.getUserId();
 
         LambdaQueryWrapper<OrderDetail> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(OrderDetail::getOrderId,id);
-        OrderDetail detailServiceOne = orderDetailService.getOne(lqw);
+        lqw.eq(OrderDetail::getOrderId, id);
+        List<OrderDetail> list = orderDetailService.list(lqw);
+        List<ShoppingCart> collect = list.stream().map(item -> {
+            String dishFlavor = item.getDishFlavor();
+            Long dishId = item.getDishId();
+            Dish dish = dishService.getById(dishId);
+            String name = dish.getName();
+            Integer number = item.getNumber();
+            BigDecimal amount = item.getAmount();
+            Long setmealId = item.getSetmealId();
+            String image = item.getImage();
 
-        String dishFlavor = detailServiceOne.getDishFlavor();
-        Long dishId = detailServiceOne.getDishId();
-        Dish dish = dishService.getById(dishId);
-        String name = dish.getName();
-        Integer number = detailServiceOne.getNumber();
-        BigDecimal amount = detailServiceOne.getAmount();
-        Long setmealId = detailServiceOne.getSetmealId();
-        String image = detailServiceOne.getImage();
+            ShoppingCart shoppingCart = new ShoppingCart();
+            shoppingCart.setUserId(userId);
+            shoppingCart.setImage(image);
+            shoppingCart.setDishId(dishId);
+            shoppingCart.setSetmealId(setmealId);
+            shoppingCart.setName(name);
+            shoppingCart.setNumber(number);
+            shoppingCart.setAmount(amount);
+            shoppingCart.setDishFlavor(dishFlavor);
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+        for (ShoppingCart shoppingCart : collect) {
+            Integer number = shoppingCart.getNumber();
+            for (int i = 1; i <= number; i++) {
+                shoppingCartController.add(shoppingCart);
+            }
+        }
 
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUserId(userId);
-        shoppingCart.setImage(image);
-        shoppingCart.setDishId(dishId);
-        shoppingCart.setSetmealId(setmealId);
-        shoppingCart.setName(name);
-        shoppingCart.setNumber(number);
-        shoppingCart.setAmount(amount);
-        shoppingCart.setDishFlavor(dishFlavor);
-        shoppingCart.setCreateTime(LocalDateTime.now());
-        shoppingCartController.add(shoppingCart);
 
         return R.success("");
     }
