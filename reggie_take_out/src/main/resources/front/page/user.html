@@ -24,7 +24,10 @@
             <div class="divUser">
                 <img src="./../images/headPage.png"/>
                 <div class="desc">
-                    <div class="divName">崔洵玮 <img src="./../images/women.png"/></div>
+                    <div class="divName" v-if="order[0]" >
+                        <span>{{order[0].userName}}</span>
+                        <img src="./../images/women.png"/>
+                    </div>
                     <div class="divPhone">{{userPhone}}</div>
                 </div>
             </div>
@@ -93,6 +96,7 @@
                     },
                     msgFlag:false,
                     order:[{
+                        userName:'',
                         orderTime:'',//下单时间
                         status:undefined,//订单状态 1已结账，2未结账，3已退单，4已完成，5已取消
                         orderDetails:[{

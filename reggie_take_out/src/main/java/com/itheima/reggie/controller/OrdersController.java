@@ -94,6 +94,14 @@ public class OrdersController {
         List<OrderDto> records = records1.stream().map(item -> {
             OrderDto orderDto = new OrderDto();
             BeanUtils.copyProperties(item, orderDto);
+            String userName = item.getUserName();
+            orderDto.setUserName(userName);
+            String consignee = item.getConsignee();
+            orderDto.setConsignee(consignee);
+            String phone = item.getPhone();
+            orderDto.setPhone(phone);
+            String address = item.getAddress();
+            orderDto.setAddress(address);
             LambdaQueryWrapper<OrderDetail> lqw1 = new LambdaQueryWrapper<>();
             lqw1.eq(OrderDetail::getOrderId, item.getId());
             List<OrderDetail> orderDetails = orderDetailService.list(lqw1);
