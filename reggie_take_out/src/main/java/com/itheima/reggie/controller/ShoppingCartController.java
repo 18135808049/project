@@ -93,8 +93,8 @@ public class ShoppingCartController {
             cartServiceOne.setNumber(number-1);
             shoppingCartService.updateById(cartServiceOne);
         }else{
-            /*Integer number = cartServiceOne.getNumber();
-            cartServiceOne.setNumber(number-1);*/
+            Integer number = cartServiceOne.getNumber();
+            cartServiceOne.setNumber(number-1);
             LambdaQueryWrapper<ShoppingCart> lqw1 = new LambdaQueryWrapper<>();
             lqw1.eq(ShoppingCart::getUserId,BaseContext.getCurrentId())
                     .eq(cartServiceOne.getDishId()!=null,ShoppingCart::getDishId,cartServiceOne.getDishId())
