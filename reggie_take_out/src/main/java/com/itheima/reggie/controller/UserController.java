@@ -55,4 +55,10 @@ public class UserController {
         }
         return R.error("登陆失败");
     }
+
+    @PostMapping("/loginout")
+    public R<String> loginout(HttpSession session){
+        session.removeAttribute("user");
+        return R.success("退出成功");
+    }
 }

@@ -118,8 +118,10 @@
                                 item.orderDetails.forEach(ele=>{
                                     number += ele.number
                                 })
-                                order.sumNum = number
+                                item.sumNum = number
+                                order = item
                             })
+
                         }
                         this.loading = false;
                         if(this.paging.page >= res.data.pages){
