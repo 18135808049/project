@@ -40,6 +40,9 @@ public class OrdersController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private ShoppingCartController shoppingCartController;
+
     @PostMapping("/submit")
     public R<String> submit(@RequestBody Orders orders){
         ordersService.submit(orders);
@@ -126,14 +129,14 @@ public class OrdersController {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUserId(userId);
         shoppingCart.setImage(image);
-        shoppingCart.setUserId(userId);
+        shoppingCart.setDishId(dishId);
         shoppingCart.setSetmealId(setmealId);
         shoppingCart.setName(name);
         shoppingCart.setNumber(number);
         shoppingCart.setAmount(amount);
         shoppingCart.setDishFlavor(dishFlavor);
         shoppingCart.setCreateTime(LocalDateTime.now());
-        shoppingCartService.save(shoppingCart);
+        shoppingCartController.add(shoppingCart);
 
         return R.success("");
     }
