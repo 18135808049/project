@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequestMapping("/common")
 @Slf4j
 public class CommonController {
-    @Value("${reggie.path}")
+    @Value("/usr/local/img")
     private String basePath;
 
     @PostMapping("/upload")
