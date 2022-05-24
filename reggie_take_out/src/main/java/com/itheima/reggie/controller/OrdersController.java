@@ -153,8 +153,6 @@ public class OrdersController {
                 shoppingCartController.add(shoppingCart);
             }
         }
-
-
         return R.success("");
     }
 
